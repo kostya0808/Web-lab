@@ -1,8 +1,31 @@
-﻿@{
+@model WebLab.Models.EmailViewModel
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div style="max-width: 500px; margin: 40px auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+    <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 25px; text-align: center;">Відправка повідомлення</h1>
+
+    <form asp-action="SendEmail" method="post">
+        <div style="display: flex; align-items: center; justify-content: flex-end; margin-bottom: 15px;">
+            <label style="margin-right: 10px; font-size: 16px;">Email отримувача:</label>
+            <input type="email" asp-for="Email" required style="width: 260px; padding: 4px 6px; font-size: 15px; border: 1px solid #767676; border-radius: 2px;" />
+        </div>
+
+        <div style="display: flex; align-items: flex-start; justify-content: flex-end; margin-bottom: 15px;">
+            <label style="margin-right: 10px; font-size: 16px; margin-top: 4px;">Повідомлення:</label>
+            <textarea asp-for="Message" required rows="3" style="width: 260px; padding: 4px 6px; font-size: 15px; border: 1px solid #767676; border-radius: 2px;"></textarea>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <button type="submit" style="padding: 3px 14px; font-size: 15px; border: 1px solid #767676; background-color: #efefef; border-radius: 2px; cursor: pointer;">Submit</button>
+        </div>
+    </form>
+
+    @if (ViewBag.Success != null)
+    {
+        <div style="margin-top: 20px; text-align: center; color: #008000; font-size: 26px; font-weight: bold;">
+            @ViewBag.Success
+        </div>
+    }
 </div>

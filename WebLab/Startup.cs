@@ -1,3 +1,5 @@
+using WebLab.Services;
+
 namespace WebLab;
 
 public class Startup
@@ -12,6 +14,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddControllersWithViews();
+        services.AddScoped<IEmailSender, EmailSenderService>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
