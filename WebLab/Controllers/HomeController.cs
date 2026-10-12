@@ -1,5 +1,9 @@
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebLab.Models;
 using WebLab.Services;
@@ -10,11 +14,13 @@ public class HomeController : Controller
 {
     private readonly IEmailSender _emailSender;
     private readonly ILogger<HomeController> _logger;
+    private readonly IWebHostEnvironment _env;
 
-    public HomeController(IEmailSender emailSender, ILogger<HomeController> logger)
+    public HomeController(IEmailSender emailSender, ILogger<HomeController> logger, IWebHostEnvironment env)
     {
         _emailSender = emailSender;
         _logger = logger;
+        _env = env;
     }
 
     public IActionResult Index(string? user, string? info)
@@ -54,6 +60,43 @@ public class HomeController : Controller
         ViewBag.SessionUser = HttpContext.Session.GetString("UserName") ?? "Гість";
         ViewBag.LastVisit = Request.Cookies["LastVisit"] ?? DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss");
         return View("Index");
+    }
+
+    [HttpGet]
+    public IActionResult Upload()
+    {
+        var filesPath = Path.Combine(_env.WebRootPath, "Files");
+        var fileNames = Directory.Exists(filesPath)
+            ? Directory.GetFiles(filesPath).Select(Path.GetFileName).Where(f => f != ".gitkeep").ToList()
+            : new List<string?>();
+        ViewBag.Files = fileNames;
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UploadFile(IFormFile? file)
+    {
+        if (file != null && file.Length > 0)
+        {
+            var uploadsFolder = Path.Combine(_env.WebRootPath, "Files");
+            Directory.CreateDirectory(uploadsFolder);
+            var filePath = Path.Combine(uploadsFolder, file.FileName);
+            using var stream = new FileStream(filePath, FileMode.Create);
+            await file.CopyToAsync(stream);
+            ViewBag.UploadSuccess = "Файл успішно завантажено: " + file.FileName;
+            _logger.LogInformation("File uploaded successfully: {FileName}", file.FileName);
+        }
+        else
+        {
+            ViewBag.UploadError = "Будь ласка, виберіть файл для завантаження.";
+        }
+
+        var filesPath = Path.Combine(_env.WebRootPath, "Files");
+        var fileNames = Directory.Exists(filesPath)
+            ? Directory.GetFiles(filesPath).Select(Path.GetFileName).Where(f => f != ".gitkeep").ToList()
+            : new List<string?>();
+        ViewBag.Files = fileNames;
+        return View("Upload");
     }
 
     public IActionResult Privacy()
