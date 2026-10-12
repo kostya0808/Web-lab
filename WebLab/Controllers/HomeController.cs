@@ -1,9 +1,11 @@
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using WebLab.Models;
 using WebLab.Services;
@@ -42,10 +44,23 @@ public class HomeController : Controller
         ViewBag.SessionUser = sessionUser;
         ViewBag.LastVisit = lastVisit;
         ViewBag.QueryInfo = info;
+        ViewBag.CurrentCulture = CultureInfo.CurrentUICulture.NativeName;
 
-        _logger.LogInformation("Loaded Home page for user: {User}", sessionUser);
+        _logger.LogInformation("Loaded Home page for user: {User}, Culture: {Culture}", sessionUser, CultureInfo.CurrentUICulture.Name);
 
         return View();
+    }
+
+    [HttpPost]
+    public IActionResult SetLanguage(string culture, string returnUrl)
+    {
+        Response.Cookies.Append(
+            CookieRequestCultureProvider.DefaultCookieName,
+            CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
+            new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
+        );
+        _logger.LogInformation("Language changed to: {Culture}", culture);
+        return LocalRedirect(returnUrl);
     }
 
     [HttpPost]
@@ -59,6 +74,7 @@ public class HomeController : Controller
         }
         ViewBag.SessionUser = HttpContext.Session.GetString("UserName") ?? "Гість";
         ViewBag.LastVisit = Request.Cookies["LastVisit"] ?? DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss");
+        ViewBag.CurrentCulture = CultureInfo.CurrentUICulture.NativeName;
         return View("Index");
     }
 

@@ -1,3 +1,5 @@
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
 using WebLab.Services;
 
 namespace WebLab;
@@ -13,7 +15,23 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddControllersWithViews();
+        services.AddLocalization(options => options.ResourcesPath = "Resources");
+        services.AddControllersWithViews()
+            .AddViewLocalization()
+            .AddDataAnnotationsLocalization();
+
+        services.Configure<RequestLocalizationOptions>(options =>
+        {
+            var supportedCultures = new[]
+            {
+                new CultureInfo("uk-UA"),
+                new CultureInfo("en-US")
+            };
+            options.DefaultRequestCulture = new RequestCulture("uk-UA");
+            options.SupportedCultures = supportedCultures;
+            options.SupportedUICultures = supportedCultures;
+        });
+
         services.AddScoped<IEmailSender, EmailSenderService>();
         services.AddDistributedMemoryCache();
         services.AddSession();
@@ -30,6 +48,13 @@ public class Startup
 
         app.UseHttpsRedirection();
         app.UseStaticFiles();
+
+        var locOptions = app.ApplicationServices.GetService<Microsoft.Extensions.Options.IOptions<RequestLocalizationOptions>>();
+        if (locOptions != null)
+        {
+            app.UseRequestLocalization(locOptions.Value);
+        }
+
         app.UseRouting();
         app.UseSession();
         app.UseAuthorization();

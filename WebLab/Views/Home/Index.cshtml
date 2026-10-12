@@ -8,6 +8,7 @@
         <h4 style="margin-top: 0; margin-bottom: 10px; color: #333;">Стан додатку та параметри:</h4>
         <p style="margin: 4px 0;"><strong>Користувач у сесії:</strong> @ViewBag.SessionUser</p>
         <p style="margin: 4px 0;"><strong>Останній візит (Cookie):</strong> @ViewBag.LastVisit</p>
+        <p style="margin: 4px 0;"><strong>Поточна локалізація сайту:</strong> @ViewBag.CurrentCulture</p>
         @if (ViewBag.QueryInfo != null)
         {
             <p style="margin: 4px 0; color: #0d6efd;"><strong>Query Info:</strong> @ViewBag.QueryInfo</p>

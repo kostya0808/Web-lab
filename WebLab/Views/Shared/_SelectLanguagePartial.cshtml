@@ -1,0 +1,27 @@
+@using Microsoft.AspNetCore.Builder
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.Extensions.Options
+@inject IOptions<RequestLocalizationOptions> LocOptions
+
+@{
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+    var cultureItems = LocOptions.Value.SupportedUICultures?
+        .Select(c => new SelectListItem { Value = c.Name, Text = c.NativeName })
+        .ToList();
+    var returnUrl = string.IsNullOrEmpty(Context.Request.Path) ? "~/" : $"{Context.Request.Path.Value}{Context.Request.QueryString.Value}";
+}
+
+<div>
+    <form asp-controller="Home" asp-action="SetLanguage" asp-route-returnUrl="@returnUrl" method="post" style="display: inline-flex; align-items: center; margin: 0;">
+        <label style="margin-right: 6px; font-size: 14px; margin-bottom: 0;">Мова:</label>
+        <select name="culture" onchange="this.form.submit();" style="padding: 2px 8px; border-radius: 4px; border: 1px solid #ced4da; font-size: 13px; background-color: #fff;">
+            @if (cultureItems != null)
+            {
+                @foreach (var item in cultureItems)
+                {
+                    <option value="@item.Value" selected="@(item.Value == requestCulture?.RequestCulture.UICulture.Name)">@item.Text</option>
+                }
+            }
+        </select>
+    </form>
+</div>
