@@ -115,6 +115,27 @@ public class HomeController : Controller
         return View("Upload");
     }
 
+    [HttpGet]
+    public IActionResult Feedback()
+    {
+        return View(new FeedbackViewModel());
+    }
+
+    [HttpPost]
+    public IActionResult Feedback(FeedbackViewModel model)
+    {
+        if (ModelState.IsValid)
+        {
+            ViewBag.FeedbackSuccess = "Дані форми успішно пройшли валідацію FluentValidation!";
+            _logger.LogInformation("Feedback valid for {Name}, Email: {Email}", model.Name, model.Email);
+        }
+        else
+        {
+            _logger.LogWarning("Feedback validation failed with {Count} errors", ModelState.ErrorCount);
+        }
+        return View(model);
+    }
+
     public IActionResult Privacy()
     {
         return View();

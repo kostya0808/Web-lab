@@ -1,6 +1,9 @@
 using System.Globalization;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Localization;
 using WebLab.Services;
+using WebLab.Validators;
 
 namespace WebLab;
 
@@ -19,6 +22,10 @@ public class Startup
         services.AddControllersWithViews()
             .AddViewLocalization()
             .AddDataAnnotationsLocalization();
+
+        services.AddFluentValidationAutoValidation();
+        services.AddFluentValidationClientsideAdapters();
+        services.AddValidatorsFromAssemblyContaining<FeedbackViewModelValidator>();
 
         services.Configure<RequestLocalizationOptions>(options =>
         {
