@@ -1,0 +1,13 @@
+@model WebLab.ViewComponents.SystemStatsViewModel
+
+<div style="background-color: #f1f3f5; border: 1px solid #ced4da; border-radius: 4px; padding: 12px; margin-top: 25px; font-size: 13px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <span style="font-weight: bold; color: #495057;">Моніторинг системи (ViewComponent):</span>
+        <span style="background-color: #28a745; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold;">ONLINE</span>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; color: #495057;">
+        <div><strong>Час сервера:</strong> @Model.ServerTime</div>
+        <div><strong>Операційна система:</strong> @Model.OsVersion</div>
+        <div><strong>Використання пам'яті:</strong> @Model.ProcessMemoryMb</div>
+    </div>
+</div>
