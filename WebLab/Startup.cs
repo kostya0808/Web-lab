@@ -15,6 +15,9 @@ public class Startup
     {
         services.AddControllersWithViews();
         services.AddScoped<IEmailSender, EmailSenderService>();
+        services.AddDistributedMemoryCache();
+        services.AddSession();
+        services.AddHttpContextAccessor();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -28,6 +31,7 @@ public class Startup
         app.UseHttpsRedirection();
         app.UseStaticFiles();
         app.UseRouting();
+        app.UseSession();
         app.UseAuthorization();
 
         app.UseEndpoints(endpoints =>
